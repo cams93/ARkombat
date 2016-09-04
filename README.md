@@ -1,2 +1,2 @@
 # ARkombat
-Augmented reality fight game
+Augmented reality fight game.
