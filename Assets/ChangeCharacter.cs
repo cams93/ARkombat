@@ -45,7 +45,6 @@ public class ChangeCharacter : MonoBehaviour {
 
 	private List<AudioClip> list = new List<AudioClip> ();
 
-
 	//public MovieTexture liu_fatality;
 	//public MovieTexture sonya_fatality;
 	//public MovieTexture scorpion_fatality;
@@ -96,7 +95,9 @@ public class ChangeCharacter : MonoBehaviour {
 	void Update () {
 		if(isGameStarted){
 			timeLeft -= Time.deltaTime;
+			Random.seed = (int)System.DateTime.Now.Ticks;
 			hp1 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
+			Random.seed = (int)System.DateTime.Now.Ticks;
 			hp2 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
 			if(timeLeft <= 0 || hp1 <= 0 || hp2 <= 0){
 				fatal = true;
@@ -110,7 +111,9 @@ public class ChangeCharacter : MonoBehaviour {
 			bool man = true;
 			float len = 0.0f;
 			if (hp1 == hp2) {
+				Random.seed = (int)System.DateTime.Now.Ticks;
 				hp1 = Random.Range (0.0f, 100.0f);
+				Random.seed = (int)System.DateTime.Now.Ticks;
 				hp2 = Random.Range (0.0f, 100.0f);
 			}
 			if (hp1 > hp2) {
@@ -131,10 +134,6 @@ public class ChangeCharacter : MonoBehaviour {
 					winner = subzero_wins;
 				}
 			}
-			fightEnd = false;
-			timeLeft = 90.0f;
-		    hp1 = 100.0f;
-			hp2 = 100.0f;
 			source.clip = background;
 			if (man) {
 				if(!stopEffects) source.PlayOneShot(finish_him,10);
@@ -145,6 +144,10 @@ public class ChangeCharacter : MonoBehaviour {
 			if(hp1 == 100.0f || hp2 == 100.0f){
 				list.Add (perfect);
 			}
+			fightEnd = false;
+			timeLeft = 90.0f;
+			hp1 = 100.0f;
+			hp2 = 100.0f;
 		}
 	}
 
