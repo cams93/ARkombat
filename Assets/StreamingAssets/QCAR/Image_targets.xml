@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
+    <ImageTarget name="bicycle" size="1.000000 1.385417" />
     <ImageTarget name="epam" size="50.000000 27.075195" />
     <ImageTarget name="liverpool" size="50.000000 31.933594" />
     <ImageTarget name="benavides" size="1.000000 0.750000" />
