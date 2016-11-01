@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class ChangeCharacter : MonoBehaviour {
 	public GameObject liuKang, scorpion, sonya, subzero;
 	public GameObject fatLiu, fatSub, faScorp, fatSon;
+
+	private int numberOfFights;
+	private int fightsWon;
 
 	private bool isGameStarted = false;
 	private bool fightEnd = false;
@@ -12,15 +17,17 @@ public class ChangeCharacter : MonoBehaviour {
 	private bool stopEffects = false;
 	private bool fatal = false;
 	private bool executingFatality = false;
+	private bool photoTaken = false;
+	private bool achievementsTable = false;
+	public bool showTextPhotoTakenFeedback = false;
+
+	public string photoName;
 
 	private float timeLeft = 90.0f;
 	public static float hp1 = 100.0f;
 	public static float hp2 = 100.0f;
 
 	public GameObject p1, p2;
-
-	private string music = "stop music";
-	private string effects = "stop effects";
 
 	private AudioSource source;
 
@@ -45,18 +52,13 @@ public class ChangeCharacter : MonoBehaviour {
 
 	private List<AudioClip> list = new List<AudioClip> ();
 
-	//public MovieTexture liu_fatality;
-	//public MovieTexture sonya_fatality;
-	//public MovieTexture scorpion_fatality;
-	//public MovieTexture subzero_fatality;
-
 	public AudioClip liu_fat;
 	public AudioClip sonya_fat;
 	public AudioClip scorpion_fat;
 	public AudioClip subzero_fat;
 
-
 	private string fatMovie;
+
 
 	void Awake () {
 		#if UNITY_ANDROID
@@ -89,21 +91,31 @@ public class ChangeCharacter : MonoBehaviour {
 		scorpion.active = false;
 		subzero.active = false;
 		list.Clear ();
+
+		LoadStats ();
 	}
 
 	// Update is called once per frame
 	void Update () {
+
 		if(isGameStarted){
 			timeLeft -= Time.deltaTime;
 			Random.seed = (int)System.DateTime.Now.Ticks;
 			hp1 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
 			Random.seed = (int)System.DateTime.Now.Ticks;
 			hp2 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
+
 			if(timeLeft <= 0 || hp1 <= 0 || hp2 <= 0){
 				fatal = true;
 				isGameStarted = false;
 				fightEnd = true;
-				//Application.LoadLevel ("GameOver");
+
+
+				numberOfFights++;
+				if (hp1 > 0) {
+					fightsWon++;
+				}
+				SaveStats ();
 			}
 		}
 		if (fightEnd) {
@@ -169,25 +181,22 @@ public class ChangeCharacter : MonoBehaviour {
 		if(!stopEffects) source.PlayOneShot(c,10);
 		yield return new WaitForSeconds (c.length);
 	}
-
 	IEnumerator WaitFatality(AudioClip a, GameObject go){
 		if(!stopBackground) source.PlayDelayed(a.length);
 		yield return new WaitForSeconds (a.length);
 		go.active = false;
 		executingFatality = false;
-		//sonya_fatality.Stop ();
-		//scorpion_fatality.Stop ();
-		//subzero_fatality.Stop ();
-		//liu_fatality.Stop ();
 	}
-	
-	private IEnumerator PlayStreamingVideo(string url)
-     {
+	private IEnumerator PlayStreamingVideo(string url){
         Handheld.PlayFullScreenMovie(url, Color.black, FullScreenMovieControlMode.Full, FullScreenMovieScalingMode.AspectFill);
         yield return new WaitForEndOfFrame();
 		executingFatality = false;
 		if(!stopBackground) source.Play ();
      }
+	private IEnumerator photoTakenFeedback(){
+		yield return new WaitForSeconds (0.5f);
+		showTextPhotoTakenFeedback = false;
+	}
 
 	float playSongs(AudioClip[] a){
 		float len = 0.0f;
@@ -215,7 +224,7 @@ public class ChangeCharacter : MonoBehaviour {
 			h /= 2;
 		}
 
-		if (fatal) {
+		if (fatal) {	//Fatality
 			GUIStyle custom = new GUIStyle ("box");
 			custom.fontSize = 20;
 			GUIStyle customB = new GUIStyle ("button");
@@ -224,24 +233,12 @@ public class ChangeCharacter : MonoBehaviour {
 			if (GUI.Button (new Rect (w/2 - w/6 + 10, h/2 - 20, w / 6 -10, h / 9), "Yes", customB)) {
 				if (fatMovie == "liu") {
 					StartCoroutine (PlayStreamingVideo("liu_fatality.mp4"));
-					//fatLiu.active = true;
-					//movieLiu.makeFatality (liu_fatality, stopEffects);
-					//StartCoroutine (WaitFatality(liu_fat, fatLiu));
 				}else if (fatMovie == "subzero") {
 					StartCoroutine (PlayStreamingVideo("subzero_fatality.mp4"));
-					//fatSub.active = true;
-					//movieSub.makeFatality (subzero_fatality, stopEffects);
-					//StartCoroutine (WaitFatality(subzero_fat, fatSub));
 				}else if (fatMovie == "sonya") {
 					StartCoroutine (PlayStreamingVideo("sonya_fatality.mp4"));
-					//fatSon.active = true;
-					//movieSon.makeFatality (sonya_fatality, stopEffects);
-					//StartCoroutine (WaitFatality(sonya_fat, fatSon));
 				}else if (fatMovie == "scorpion") {
 					StartCoroutine (PlayStreamingVideo("scorpion_fatality.mp4"));
-					//faScorp.active = true;
-					//movieScorp.makeFatality (scorpion_fatality, stopEffects);
-					//StartCoroutine (WaitFatality(scorpion_fat, faScorp));
 				}
 				fatal = false;
 				executingFatality = true;
@@ -254,7 +251,8 @@ public class ChangeCharacter : MonoBehaviour {
 				list.Clear ();
 			}
 
-		}else if(executingFatality){
+		}
+		else if(executingFatality){
 
 		}
 		else if (!isGameStarted && !fatal) {
@@ -268,7 +266,7 @@ public class ChangeCharacter : MonoBehaviour {
 
 			GUI.Box (new Rect (10, w/3, w / 4, h / 4 + 70), "Settings", customBox);
 
-			if (GUI.Button (new Rect (20, w/3 + 30, w / 4 - 20, h / 8), music, customButton)) {
+			if (GUI.Button (new Rect (20, w/3 + 30, w / 4 - 20, h / 8), "Stop music", customButton)) {
 				stopBackground = !stopBackground;
 				if (stopBackground) {
 					source.Stop ();
@@ -276,7 +274,7 @@ public class ChangeCharacter : MonoBehaviour {
 					source.Play ();
 				}
 			}
-			if (GUI.Button (new Rect (20, w/3 + h / 8 + 50, w / 4 - 20, h / 8), effects, customButton)) {
+			if (GUI.Button (new Rect (20, w/3 + h / 8 + 50, w / 4 - 20, h / 8), "Stop effects", customButton)) {
 				stopEffects = !stopEffects;
 			}
 
@@ -304,37 +302,38 @@ public class ChangeCharacter : MonoBehaviour {
 				subzero.active = true;
 			}
 
+			if (GUI.Button (new Rect (w - w/4 - 10, h - h/8, w / 4, h / 8 + 70), "Achievements", customButton)) {
+				achievementsTable = !achievementsTable;
+			}
+			if (achievementsTable) {
+				GUIStyle customText = new GUIStyle ("button");
+				customText.fontSize = 20;
+
+				string text = "";
+				text += "Number of fights: " + numberOfFights + "\n";
+				text += "Number of wins: " + fightsWon + "\n";
+				text += "Number of losts: "+ (numberOfFights - fightsWon) + "\n";
+				GUI.Box (new Rect (w / 2 - w / 8, h / 2 - h / 8, w / 4, h / 4), text, customText);
+
+			}
+
 
 			if (GUI.Button (new Rect (w / 2 - w / 8 - 10, h / 2 - 20, w / 4 - 20, h / 8), "Fight", customButton)) {
 				if (liuKang.activeSelf) {
-					//print ("Samurai activo");
 					p1 = liuKang;
-					//DontDestroyOnLoad (liuKang);
-					//Destroy (scorpion);
 				} else {
-					//print ("Berserker activo");
 					p1 = scorpion;
-					//DontDestroyOnLoad (scorpion);
-					//Destroy (liuKang);
 				}
 				if (sonya.activeSelf) {
-					//print ("Female activo");
 					p2 = sonya;
-					//DontDestroyOnLoad (sonya);
-					//Destroy (subzero);
 				} else {
-					//print ("Male activo");
 					p2 = subzero;
-					//DontDestroyOnLoad (subzero);
-					//Destroy (sonya);
 				}
 
 				isGameStarted = true;
 				source.clip = arena;
 				if(!stopEffects) source.PlayOneShot(fight,10);
 				if(!stopBackground) source.PlayDelayed(fight.length);
-
-				//Application.LoadLevel ("AR");
 			}
 		} else {
 			GUIStyle customLabel = new GUIStyle ("label");
@@ -343,8 +342,66 @@ public class ChangeCharacter : MonoBehaviour {
 			GUI.Label (new Rect (w / 2 - 100, 10+40, 200, 100), timeLeft+"", customLabel);
 			GUI.Label (new Rect (80, 10+40, 200, 100), hp1+"", customLabel);
 			GUI.Label (new Rect (w - 120, 10+40, 200, 100), hp2+"", customLabel);
+
+			GUIStyle customButton = new GUIStyle ("button");
+			customButton.fontSize = 30;
+			if (GUI.Button (new Rect (w - w / 8 - 10, h - h / 8 - 20, w / 8 - 20, h / 8), "Photo", customButton)) {
+				photoName = "ARKombat__"+System.DateTime.Now.ToFileTime ().ToString () + ".png";
+				Application.CaptureScreenshot (photoName);
+				photoTaken = true;
+				showTextPhotoTakenFeedback = true;
+			}
+
+			if(showTextPhotoTakenFeedback){
+				StartCoroutine (photoTakenFeedback ());
+				GUIStyle c = new GUIStyle ("label");
+				c.fontSize = 15;
+				GUI.Label (new Rect (w/2, h/2, 500, 500), "Photo taken", c);
+			}
+
+			if (photoTaken) {
+				string Origin_Path = System.IO.Path.Combine (Application.persistentDataPath, photoName);
+
+				string Path = "/mnt/sdcard/DCIM/" + photoName;
+				if (System.IO.File.Exists (Origin_Path)) {
+					System.IO.File.Move (Origin_Path, Path);
+				}
+
+			}
+
 		}
 
 	}
 
+
+	public void SaveStats(){
+		BinaryFormatter bf = new BinaryFormatter ();
+		FileStream file = File.Create (Application.persistentDataPath+"/playerInfo.dat");
+
+		PlayerData data = new PlayerData ();
+		data.fights = this.numberOfFights;
+		data.wins = this.fightsWon;
+
+		bf.Serialize (file, data);
+		file.Close ();
+	}
+
+	public void LoadStats(){
+		if (File.Exists (Application.persistentDataPath + "/playerInfo.dat")) {
+			BinaryFormatter bf = new BinaryFormatter ();
+			FileStream file = File.Open (Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
+			PlayerData data = (PlayerData)bf.Deserialize (file);
+			file.Close ();
+
+			numberOfFights = data.fights;
+			fightsWon = data.wins;
+		}
+	}
+
+}
+
+[System.Serializable]
+class PlayerData{
+	public int fights;
+	public int wins;
 }
