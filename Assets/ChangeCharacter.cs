@@ -264,9 +264,9 @@ public class ChangeCharacter : MonoBehaviour {
 			GUI.Box (new Rect (10, 10, w / 4, h / 4 + 70), "Player 1", customBox);
 			GUI.Box (new Rect (w - w / 4 - 10, 10, w / 4, h / 4 + 70), "Player 2", customBox);
 
-			GUI.Box (new Rect (10, w/3, w / 4, h / 4 + 70), "Settings", customBox);
+			GUI.Box (new Rect (10, w/3 - 50, w / 4, h / 4 + 70), "Settings", customBox);
 
-			if (GUI.Button (new Rect (20, w/3 + 30, w / 4 - 20, h / 8), "Stop music", customButton)) {
+			if (GUI.Button (new Rect (20, w/3 -20, w / 4 - 20, h / 8), "Stop music", customButton)) {
 				stopBackground = !stopBackground;
 				if (stopBackground) {
 					source.Stop ();
@@ -274,7 +274,7 @@ public class ChangeCharacter : MonoBehaviour {
 					source.Play ();
 				}
 			}
-			if (GUI.Button (new Rect (20, w/3 + h / 8 + 50, w / 4 - 20, h / 8), "Stop effects", customButton)) {
+			if (GUI.Button (new Rect (20, w/3 + h / 8, w / 4 - 20, h / 8), "Stop effects", customButton)) {
 				stopEffects = !stopEffects;
 			}
 
@@ -302,7 +302,7 @@ public class ChangeCharacter : MonoBehaviour {
 				subzero.active = true;
 			}
 
-			if (GUI.Button (new Rect (w - w/4 - 10, h - h/8, w / 4, h / 8 + 70), "Achievements", customButton)) {
+			if (GUI.Button (new Rect (w - w/4 - 10, h - h / 8 - 20, w / 4, h / 8), "Achievements", customButton)) {
 				achievementsTable = !achievementsTable;
 			}
 			if (achievementsTable) {
@@ -313,12 +313,12 @@ public class ChangeCharacter : MonoBehaviour {
 				text += "Number of fights: " + numberOfFights + "\n";
 				text += "Number of wins: " + fightsWon + "\n";
 				text += "Number of losts: "+ (numberOfFights - fightsWon) + "\n";
-				GUI.Box (new Rect (w / 2 - w / 8, h / 2 - h / 8, w / 4, h / 4), text, customText);
+				GUI.Box (new Rect (w / 2 - w / 8, 10, w / 4, h / 4), text, customText);
 
 			}
 
 
-			if (GUI.Button (new Rect (w / 2 - w / 8 - 10, h / 2 - 20, w / 4 - 20, h / 8), "Fight", customButton)) {
+			if (GUI.Button (new Rect (w / 2 - w / 8, h / 2 - 20, w / 4, h / 8), "Fight", customButton)) {
 				if (liuKang.activeSelf) {
 					p1 = liuKang;
 				} else {
