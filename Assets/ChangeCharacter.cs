@@ -50,6 +50,9 @@ public class ChangeCharacter : MonoBehaviour {
 	public AudioClip background;
 	public AudioClip arena;
 
+	public static string name1, name2;
+	public Canvas canvas;
+
 	private List<AudioClip> list = new List<AudioClip> ();
 
 	public AudioClip liu_fat;
@@ -58,7 +61,6 @@ public class ChangeCharacter : MonoBehaviour {
 	public AudioClip subzero_fat;
 
 	private string fatMovie;
-
 
 	void Awake () {
 		#if UNITY_ANDROID
@@ -90,6 +92,7 @@ public class ChangeCharacter : MonoBehaviour {
 	
 		scorpion.active = false;
 		subzero.active = false;
+		canvas.enabled = false;
 		list.Clear ();
 
 		LoadStats ();
@@ -105,14 +108,14 @@ public class ChangeCharacter : MonoBehaviour {
 			Random.seed = (int)System.DateTime.Now.Ticks;
 			hp2 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
 
-			if(timeLeft <= 0 || hp1 <= 0 || hp2 <= 0){
+			if(timeLeft <= 0 || hp1 <= -50 || hp2 <= -50){
 				fatal = true;
 				isGameStarted = false;
 				fightEnd = true;
 
 
 				numberOfFights++;
-				if (hp1 > 0) {
+				if (hp1 > -50) {
 					fightsWon++;
 				}
 				SaveStats ();
@@ -157,9 +160,6 @@ public class ChangeCharacter : MonoBehaviour {
 				list.Add (perfect);
 			}
 			fightEnd = false;
-			timeLeft = 90.0f;
-			hp1 = 100.0f;
-			hp2 = 100.0f;
 		}
 	}
 
@@ -256,6 +256,10 @@ public class ChangeCharacter : MonoBehaviour {
 
 		}
 		else if (!isGameStarted && !fatal) {
+			timeLeft = 90.0f;
+			hp1 = 100.0f;
+			hp2 = 100.0f;
+			canvas.enabled = false;
 			GUIStyle customBox = new GUIStyle ("box");
 			customBox.fontSize = 20;
 			GUIStyle customButton = new GUIStyle ("button");
@@ -321,16 +325,21 @@ public class ChangeCharacter : MonoBehaviour {
 			if (GUI.Button (new Rect (w / 2 - w / 8, h / 2 - 20, w / 4, h / 8), "Fight", customButton)) {
 				if (liuKang.activeSelf) {
 					p1 = liuKang;
+					name1 = "Liu Kang";
 				} else {
 					p1 = scorpion;
+					name1 = "Scorpion";
 				}
 				if (sonya.activeSelf) {
 					p2 = sonya;
+					name2 = "Sonya";
 				} else {
 					p2 = subzero;
+					name2 = "Sub-Zero";
 				}
 
 				isGameStarted = true;
+				canvas.enabled = true;
 				source.clip = arena;
 				if(!stopEffects) source.PlayOneShot(fight,10);
 				if(!stopBackground) source.PlayDelayed(fight.length);
@@ -340,8 +349,6 @@ public class ChangeCharacter : MonoBehaviour {
 			customLabel.fontSize = 30;
 
 			GUI.Label (new Rect (w / 2 - 100, 10+40, 200, 100), timeLeft+"", customLabel);
-			GUI.Label (new Rect (80, 10+40, 200, 100), hp1+"", customLabel);
-			GUI.Label (new Rect (w - 120, 10+40, 200, 100), hp2+"", customLabel);
 
 			GUIStyle customButton = new GUIStyle ("button");
 			customButton.fontSize = 30;
