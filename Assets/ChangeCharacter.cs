@@ -11,7 +11,7 @@ public class ChangeCharacter : MonoBehaviour {
 	private int numberOfFights;
 	private int fightsWon;
 
-	private bool isGameStarted = false;
+	public static bool isGameStarted = false;
 	private bool fightEnd = false;
 	private bool stopBackground = false;
 	private bool stopEffects = false;
@@ -352,7 +352,7 @@ public class ChangeCharacter : MonoBehaviour {
 
 			GUIStyle customButton = new GUIStyle ("button");
 			customButton.fontSize = 30;
-			if (GUI.Button (new Rect (w - w / 8 - 10, h - h / 8 - 20, w / 8 - 20, h / 8), "Photo", customButton)) {
+			if (GUI.Button (new Rect (w - w / 8 - 10, h / 4, w / 8, h / 8), "Photo", customButton)) {
 				photoName = "ARKombat__"+System.DateTime.Now.ToFileTime ().ToString () + ".png";
 				Application.CaptureScreenshot (photoName);
 				photoTaken = true;
