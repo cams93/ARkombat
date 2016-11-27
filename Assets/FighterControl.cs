@@ -4,15 +4,18 @@ using System.Collections;
 public class FighterControl : MonoBehaviour {
 	
 	public Animator animator;
+	private AudioSource source;
 
 	private Transform defaultCamTransform;
 	private Vector3 resetPos;
 	private Quaternion resetRot;
 	private GameObject cam;
 	private GameObject fighter;
+	public AudioClip hit;
 
 	void Start()
 	{
+		source = GetComponent<AudioSource>();
 		cam = GameObject.FindWithTag("MainCamera");
 		defaultCamTransform = cam.transform;
 		resetPos = defaultCamTransform.position;
@@ -28,13 +31,6 @@ public class FighterControl : MonoBehaviour {
 		GUIStyle customButton = new GUIStyle ("button");
 		customButton.fontSize = 30;
 		if (ChangeCharacter.isGameStarted) {
-			if (GUI.RepeatButton (new Rect (815, 535, 100, 30), "Reset Scene", customButton)) 
-			{
-				defaultCamTransform.position = resetPos;
-				defaultCamTransform.rotation = resetRot;
-				fighter.transform.position = new Vector3(0,0,0);
-				animator.Play("Idle");
-			}
 
 			if (GUI.RepeatButton (new Rect (20, w/3 -20, w / 4 - 20, h / 8), "Walk Forward", customButton)) 
 			{
@@ -56,6 +52,7 @@ public class FighterControl : MonoBehaviour {
 
 			if (GUI.Button (new Rect (w - w/4 - 10, h - h / 8 - 20, w / 4, h / 8), "Punch", customButton)) 
 			{
+				if(!ChangeCharacter.stopEffects) source.PlayOneShot(hit,10);
 				animator.SetTrigger("PunchTrigger");
 			}
 		}

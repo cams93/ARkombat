@@ -14,7 +14,7 @@ public class ChangeCharacter : MonoBehaviour {
 	public static bool isGameStarted = false;
 	private bool fightEnd = false;
 	private bool stopBackground = false;
-	private bool stopEffects = false;
+	public static bool stopEffects = false;
 	private bool fatal = false;
 	private bool executingFatality = false;
 	private bool photoTaken = false;
