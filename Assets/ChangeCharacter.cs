@@ -104,9 +104,9 @@ public class ChangeCharacter : MonoBehaviour {
 		if(isGameStarted){
 			timeLeft -= Time.deltaTime;
 			Random.seed = (int)System.DateTime.Now.Ticks;
-			hp1 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
+			//hp1 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
 			Random.seed = (int)System.DateTime.Now.Ticks;
-			hp2 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
+			//hp2 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
 
 			if(timeLeft <= 0 || hp1 <= -50 || hp2 <= -50){
 				fatal = true;
@@ -256,6 +256,11 @@ public class ChangeCharacter : MonoBehaviour {
 
 		}
 		else if (!isGameStarted && !fatal) {
+			/*liuKang.transform.position = GameObject.Find ("ImageTarget").transform.position;
+			scorpion.transform.position = GameObject.Find ("ImageTarget").transform.position;
+			sonya.transform.position = GameObject.Find ("ImageTarget2").transform.position;
+			subzero.transform.position = GameObject.Find ("ImageTarget2").transform.position;*/
+
 			timeLeft = 90.0f;
 			hp1 = 100.0f;
 			hp2 = 100.0f;
