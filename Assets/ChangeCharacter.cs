@@ -10,12 +10,13 @@ public class ChangeCharacter : MonoBehaviour {
 
 	private int numberOfFights;
 	private int fightsWon;
+	private string effects, music;
 
 	public static bool isGameStarted = false;
 	private bool fightEnd = false;
 	private bool stopBackground = false;
 	public static bool stopEffects = false;
-	private bool fatal = false;
+	public static bool fatal = false;
 	private bool executingFatality = false;
 	private bool photoTaken = false;
 	private bool achievementsTable = false;
@@ -52,6 +53,7 @@ public class ChangeCharacter : MonoBehaviour {
 
 	public static string name1, name2;
 	public Canvas canvas;
+	public Canvas canvas2;
 
 	private List<AudioClip> list = new List<AudioClip> ();
 
@@ -93,6 +95,7 @@ public class ChangeCharacter : MonoBehaviour {
 		scorpion.active = false;
 		subzero.active = false;
 		canvas.enabled = false;
+		canvas2.enabled = false;
 		list.Clear ();
 
 		LoadStats ();
@@ -112,8 +115,6 @@ public class ChangeCharacter : MonoBehaviour {
 				fatal = true;
 				isGameStarted = false;
 				fightEnd = true;
-
-
 				numberOfFights++;
 				if (hp1 > -50) {
 					fightsWon++;
@@ -225,12 +226,13 @@ public class ChangeCharacter : MonoBehaviour {
 		}
 
 		if (fatal) {	//Fatality
+			canvas2.enabled = true;
 			GUIStyle custom = new GUIStyle ("box");
 			custom.fontSize = 20;
 			GUIStyle customB = new GUIStyle ("button");
 			customB.fontSize = 30;
-			GUI.Box (new Rect (w/2 - w/6, h/2 - h/6, w / 3 + 10, h / 3), "Fatality", custom);
-			if (GUI.Button (new Rect (w/2 - w/6 + 10, h/2 - 20, w / 6 -10, h / 9), "Yes", customB)) {
+			GUI.Box (new Rect (w/2 - w/6, h/2 - h/6 +50, w / 3 + 10, h / 3), "", custom);
+			if (GUI.Button (new Rect (w/2 - w/6 + 10, h/2 + 30, w / 6 -10, h / 9), "Yes", customB)) {
 				if (fatMovie == "liu") {
 					StartCoroutine (PlayStreamingVideo("liu_fatality.mp4"));
 				}else if (fatMovie == "subzero") {
@@ -244,7 +246,7 @@ public class ChangeCharacter : MonoBehaviour {
 				executingFatality = true;
 				list.Clear ();
 			}
-			if (GUI.Button (new Rect (w/2 + 10, h/2 - 20, w / 6 -10, h / 9), "No", customB)) {
+			if (GUI.Button (new Rect (w/2 + 10, h/2 + 30, w / 6 -10, h / 9), "No", customB)) {
 				AudioClip[] songs = list.ToArray();
 				if(!stopBackground) source.PlayDelayed(playSongs (songs));
 				fatal = false;
@@ -253,14 +255,13 @@ public class ChangeCharacter : MonoBehaviour {
 
 		}
 		else if(executingFatality){
-
 		}
 		else if (!isGameStarted && !fatal) {
 			/*liuKang.transform.position = GameObject.Find ("ImageTarget").transform.position;
 			scorpion.transform.position = GameObject.Find ("ImageTarget").transform.position;
 			sonya.transform.position = GameObject.Find ("ImageTarget2").transform.position;
 			subzero.transform.position = GameObject.Find ("ImageTarget2").transform.position;*/
-
+			canvas2.enabled = false;
 			timeLeft = 90.0f;
 			hp1 = 100.0f;
 			hp2 = 100.0f;
@@ -275,7 +276,19 @@ public class ChangeCharacter : MonoBehaviour {
 
 			GUI.Box (new Rect (10, w/3 - 50, w / 4, h / 4 + 70), "Settings", customBox);
 
-			if (GUI.Button (new Rect (20, w/3 -20, w / 4 - 20, h / 8), "Stop music", customButton)) {
+			if (!stopBackground) {
+				music = "Stop music";
+			} else {
+				music = "Play music";
+			}
+
+			if (!stopEffects) {
+				effects = "Stop effects";
+			} else {
+				effects = "Play effects";
+			}
+
+			if (GUI.Button (new Rect (20, w/3 -20, w / 4 - 20, h / 8), music, customButton)) {
 				stopBackground = !stopBackground;
 				if (stopBackground) {
 					source.Stop ();
@@ -283,7 +296,7 @@ public class ChangeCharacter : MonoBehaviour {
 					source.Play ();
 				}
 			}
-			if (GUI.Button (new Rect (20, w/3 + h / 8, w / 4 - 20, h / 8), "Stop effects", customButton)) {
+			if (GUI.Button (new Rect (20, w/3 + h / 8, w / 4 - 20, h / 8), effects, customButton)) {
 				stopEffects = !stopEffects;
 			}
 
@@ -311,7 +324,7 @@ public class ChangeCharacter : MonoBehaviour {
 				subzero.active = true;
 			}
 
-			if (GUI.Button (new Rect (w - w/4 - 10, h - h / 8 - 20, w / 4, h / 8), "Achievements", customButton)) {
+			if (GUI.Button (new Rect (w - w/4 - 10, h - h / 8 - 20, w / 4, h / 8), "Statistics", customButton)) {
 				achievementsTable = !achievementsTable;
 			}
 			if (achievementsTable) {
@@ -350,10 +363,11 @@ public class ChangeCharacter : MonoBehaviour {
 				if(!stopBackground) source.PlayDelayed(fight.length);
 			}
 		} else {
+			canvas2.enabled = false;
 			GUIStyle customLabel = new GUIStyle ("label");
 			customLabel.fontSize = 30;
 
-			GUI.Label (new Rect (w / 2 - 100, 10+40, 200, 100), timeLeft+"", customLabel);
+			GUI.Label (new Rect (w / 2, 10+40, 200, 100), (int)timeLeft+"", customLabel);
 
 			GUIStyle customButton = new GUIStyle ("button");
 			customButton.fontSize = 30;

@@ -14,7 +14,7 @@ public class FighterControl : MonoBehaviour {
 	public AudioClip hit;
 	private GameObject meshPlayer, meshAi;
 
-	private bool isAttacking = false;
+	private bool isAttacking2 = false;
 
 	void Start()
 	{
@@ -87,7 +87,6 @@ public class FighterControl : MonoBehaviour {
 
 			if (GUI.RepeatButton (new Rect (20, w / 3 - 20, w / 4 - 20, h / 8), "Walk Forward", customButton)) {
 				if (Vector3.Distance (meshPlayer.transform.position, meshAi.transform.position) > 40.0f) {
-					isAttacking = false;
 					animator.SetBool ("Walk Forward", true);
 				} else {
 					animator.SetBool ("Walk Forward", false);
@@ -97,34 +96,27 @@ public class FighterControl : MonoBehaviour {
 			}
 
 			if (GUI.RepeatButton (new Rect (20, w / 3 + h / 8, w / 4 - 20, h / 8), "Walk Backward", customButton)) {
-				isAttacking = false;
 				animator.SetBool ("Walk Backward", true);
 			} else {
 				animator.SetBool ("Walk Backward", false);
 			}
 
 			if (GUI.Button (new Rect (w - w / 4 - 10, h - h / 8 - 20, w / 4, h / 8), "Punch", customButton)) {
-				if (!ChangeCharacter.stopEffects)
-					source.PlayOneShot (hit, 10);
-				isAttacking = true;
+				isAttacking2 = true;
 				animator.SetTrigger ("PunchTrigger");
 			}
-		} else {
-			animator.SetBool ("Walk Forward", false);
-			animator.SetBool ("Walk Backward", false);
-			animator.SetBool ("PunchTrigger", false);
 		}
-
 	}
 
 	void OnTriggerEnter(Collider col){
 		if (ChangeCharacter.isGameStarted) {
 			if (col.gameObject.transform.parent.parent.name == "Sonya" || col.gameObject.transform.parent.parent.name == "SubZero") {
-				//print("TRIGGER player");
-				if (isAttacking) {
-					//Decrease AIs life
-					//print("TRIGGER player, decrease life");
-					ChangeCharacter.hp2--;
+				if (isAttacking2) {
+					ChangeCharacter.hp2-=5;
+					isAttacking2 = false;
+					if (!ChangeCharacter.stopEffects)
+						source.PlayOneShot (hit, 1);
+
 				}
 			}
 		}
