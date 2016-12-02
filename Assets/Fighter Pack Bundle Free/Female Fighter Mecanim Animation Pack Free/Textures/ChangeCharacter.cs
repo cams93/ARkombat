@@ -5,73 +5,64 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 public class ChangeCharacter : MonoBehaviour {
-	public GameObject liuKang, scorpion, sonya, subzero;
-	public GameObject fatLiu, fatSub, faScorp, fatSon;
+	
+	private List<AudioClip> list = new List<AudioClip> ();
+	private AudioSource source;
 
 	private int numberOfFights;
 	private int fightsWon;
+	private float timeLeft;
 	private string effects, music;
+	private string fatMovie;
 
-	public static bool isGameStarted = false;
-	private bool fightEnd = false;
-	private bool stopBackground = false;
-	public static bool stopEffects = false;
-	public static bool fatal = false;
-	private bool executingFatality = false;
-	private bool photoTaken = false;
-	private bool achievementsTable = false;
-	public bool showTextPhotoTakenFeedback = false;
+	private bool fightEnd;
+	private bool stopBackground;
+	private bool executingFatality;
+	private bool photoTaken;
+	private bool achievementsTable;
+	public bool showTextPhotoTakenFeedback;
+	public static bool isGameStarted;
+	public static bool stopEffects;
+	public static bool fatal;
 
-	public string photoName;
-
-	private float timeLeft = 90.0f;
-	public static float hp1 = 100.0f;
-	public static float hp2 = 100.0f;
-
+	public GameObject liuKang, scorpion, sonya, subzero;
+	public GameObject fatLiu, fatSub, faScorp, fatSon;
 	public GameObject p1, p2;
-
-	private AudioSource source;
 
 	public AudioClip liu_start;
 	public AudioClip sonya_start;
 	public AudioClip scorpion_start;
 	public AudioClip subzero_start;
-
 	public AudioClip liu_wins;
 	public AudioClip sonya_wins;
 	public AudioClip scorpion_wins;
 	public AudioClip subzero_wins;
-
 	public AudioClip fight;
 	public AudioClip fatality;
 	public AudioClip finish_him;
 	public AudioClip finish_her;
 	public AudioClip perfect;
-
 	public AudioClip background;
 	public AudioClip arena;
-
-	public static string name1, name2;
-	public Canvas canvas;
-	public Canvas canvas2;
-
-	private List<AudioClip> list = new List<AudioClip> ();
-
 	public AudioClip liu_fat;
 	public AudioClip sonya_fat;
 	public AudioClip scorpion_fat;
 	public AudioClip subzero_fat;
 
-	private string fatMovie;
+	public Canvas canvas;
+	public Canvas canvas2;
+
+	public static float hp1;
+	public static float hp2;
+
+	public static string name1, name2;
+	public string photoName;
 
 	void Awake () {
-		#if UNITY_ANDROID
-		Handheld.PlayFullScreenMovie("");
-		#else
-		MovieTexture stuff;
-		#endif
-
 		source = GetComponent<AudioSource>();
+		timeLeft = 90.0f;
+		hp1 = 100.0f;
+		hp2 = 100.0f;
 		fatLiu.active = false;
 		fatSub.active = false;
 		faScorp.active = false;
@@ -81,23 +72,15 @@ public class ChangeCharacter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		#if UNITY_ANDROID
-		Handheld.PlayFullScreenMovie("");
-		#else
-		MovieTexture stuff;
-		#endif
-
 		liuKang = GameObject.Find ("LiuKang");
 		scorpion = GameObject.Find ("Scorpion");
 		sonya = GameObject.Find ("Sonya");
 		subzero = GameObject.Find ("SubZero");
-	
 		scorpion.active = false;
 		subzero.active = false;
 		canvas.enabled = false;
 		canvas2.enabled = false;
 		list.Clear ();
-
 		LoadStats ();
 	}
 
@@ -106,11 +89,6 @@ public class ChangeCharacter : MonoBehaviour {
 
 		if(isGameStarted){
 			timeLeft -= Time.deltaTime;
-			Random.seed = (int)System.DateTime.Now.Ticks;
-			//hp1 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
-			Random.seed = (int)System.DateTime.Now.Ticks;
-			//hp2 -= Time.deltaTime * Random.Range (0.0f, 40.0f);
-
 			if(timeLeft <= 0 || hp1 <= -50 || hp2 <= -50){
 				fatal = true;
 				isGameStarted = false;
@@ -221,10 +199,6 @@ public class ChangeCharacter : MonoBehaviour {
 		int w = Screen.width;
 		int h = Screen.height;
 
-		if(w<h){
-			h /= 2;
-		}
-
 		if (fatal) {	//Fatality
 			canvas2.enabled = true;
 			GUIStyle custom = new GUIStyle ("box");
@@ -254,13 +228,8 @@ public class ChangeCharacter : MonoBehaviour {
 			}
 
 		}
-		else if(executingFatality){
-		}
+		else if(executingFatality){}
 		else if (!isGameStarted && !fatal) {
-			/*liuKang.transform.position = GameObject.Find ("ImageTarget").transform.position;
-			scorpion.transform.position = GameObject.Find ("ImageTarget").transform.position;
-			sonya.transform.position = GameObject.Find ("ImageTarget2").transform.position;
-			subzero.transform.position = GameObject.Find ("ImageTarget2").transform.position;*/
 			canvas2.enabled = false;
 			timeLeft = 90.0f;
 			hp1 = 100.0f;
@@ -273,7 +242,6 @@ public class ChangeCharacter : MonoBehaviour {
 
 			GUI.Box (new Rect (10, 10, w / 4, h / 4 + 70), "Player 1", customBox);
 			GUI.Box (new Rect (w - w / 4 - 10, 10, w / 4, h / 4 + 70), "Player 2", customBox);
-
 			GUI.Box (new Rect (10, w/3 - 50, w / 4, h / 4 + 70), "Settings", customBox);
 
 			if (!stopBackground) {
@@ -300,7 +268,6 @@ public class ChangeCharacter : MonoBehaviour {
 				stopEffects = !stopEffects;
 			}
 
-
 			if (GUI.Button (new Rect (20, 40, w / 4 - 20, h / 8), "Liu Kang", customButton)) {
 				if(!stopEffects) source.PlayOneShot(liu_start,10);
 				liuKang.active = true;
@@ -311,8 +278,7 @@ public class ChangeCharacter : MonoBehaviour {
 				liuKang.active = false;
 				scorpion.active = true;
 			}
-
-
+				
 			if (GUI.Button (new Rect (w - w / 4, 40, w / 4 - 20, h / 8), "Sonya", customButton)) {
 				if(!stopEffects) source.PlayOneShot(sonya_start,10);
 				sonya.active = true;
@@ -330,16 +296,13 @@ public class ChangeCharacter : MonoBehaviour {
 			if (achievementsTable) {
 				GUIStyle customText = new GUIStyle ("button");
 				customText.fontSize = 20;
-
 				string text = "";
 				text += "Number of fights: " + numberOfFights + "\n";
 				text += "Number of wins: " + fightsWon + "\n";
 				text += "Number of losts: "+ (numberOfFights - fightsWon) + "\n";
 				GUI.Box (new Rect (w / 2 - w / 8, 10, w / 4, h / 4), text, customText);
-
 			}
-
-
+				
 			if (GUI.Button (new Rect (w / 2 - w / 8, h / 2 - 20, w / 4, h / 8), "Fight", customButton)) {
 				if (liuKang.activeSelf) {
 					p1 = liuKang;
@@ -362,13 +325,11 @@ public class ChangeCharacter : MonoBehaviour {
 				if(!stopEffects) source.PlayOneShot(fight,10);
 				if(!stopBackground) source.PlayDelayed(fight.length);
 			}
-		} else {
+		}else {
 			canvas2.enabled = false;
 			GUIStyle customLabel = new GUIStyle ("label");
 			customLabel.fontSize = 30;
-
 			GUI.Label (new Rect (w / 2, 10+40, 200, 100), (int)timeLeft+"", customLabel);
-
 			GUIStyle customButton = new GUIStyle ("button");
 			customButton.fontSize = 30;
 			if (GUI.Button (new Rect (w - w / 8 - 10, h / 4, w / 8, h / 8), "Photo", customButton)) {
@@ -384,7 +345,6 @@ public class ChangeCharacter : MonoBehaviour {
 				c.fontSize = 15;
 				GUI.Label (new Rect (w/2, h/2, 500, 500), "Photo taken", c);
 			}
-
 			if (photoTaken) {
 				string Origin_Path = System.IO.Path.Combine (Application.persistentDataPath, photoName);
 
@@ -392,22 +352,16 @@ public class ChangeCharacter : MonoBehaviour {
 				if (System.IO.File.Exists (Origin_Path)) {
 					System.IO.File.Move (Origin_Path, Path);
 				}
-
 			}
-
 		}
-
 	}
-
-
+		
 	public void SaveStats(){
 		BinaryFormatter bf = new BinaryFormatter ();
 		FileStream file = File.Create (Application.persistentDataPath+"/playerInfo.dat");
-
 		PlayerData data = new PlayerData ();
 		data.fights = this.numberOfFights;
 		data.wins = this.fightsWon;
-
 		bf.Serialize (file, data);
 		file.Close ();
 	}
@@ -418,12 +372,10 @@ public class ChangeCharacter : MonoBehaviour {
 			FileStream file = File.Open (Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
 			PlayerData data = (PlayerData)bf.Deserialize (file);
 			file.Close ();
-
 			numberOfFights = data.fights;
 			fightsWon = data.wins;
 		}
 	}
-
 }
 
 [System.Serializable]

@@ -3,18 +3,17 @@ using System.Collections;
 
 public class FighterControl : MonoBehaviour {
 	
-	public Animator animator;
 	private AudioSource source;
-
 	private Transform defaultCamTransform;
 	private Vector3 resetPos;
 	private Quaternion resetRot;
 	private GameObject cam;
 	private GameObject fighter, ai;
-	public AudioClip hit;
 	private GameObject meshPlayer, meshAi;
+	private bool isAttacking2;
 
-	private bool isAttacking2 = false;
+	public Animator animator;
+	public AudioClip hit;
 
 	void Start()
 	{
@@ -41,7 +40,6 @@ public class FighterControl : MonoBehaviour {
 		} else {
 			meshAi = GameObject.Find ("Mesh_Male");
 		}
-
 		source = GetComponent<AudioSource>();
 		cam = GameObject.FindWithTag("MainCamera");
 		defaultCamTransform = cam.transform;

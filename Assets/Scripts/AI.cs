@@ -2,28 +2,22 @@
 using System.Collections;
 
 public class AI : MonoBehaviour {
+	
 	private GameObject player1, ai;
 	private GameObject meshPlayer, meshAi;
-	public Animator animator;
-	private bool isAttacking = false;
-	private bool stop = false;
+	private bool isAttacking ;
+	private bool stop;
 	public GameObject marker;
-
-	// Use this for initialization
-	void Start () {
-		
-	}
+	public Animator animator;
 
 	void OnGUI () {
 		if (ChangeCharacter.isGameStarted) {
-			//print (Vector3.Distance(meshPlayer.transform.position, meshAi.transform.position));
 			if (Vector3.Distance (meshPlayer.transform.position, meshAi.transform.position) > 40.0f) {
 				isAttacking = false;
 				animator.SetBool ("Walk Forward", true);
 			} else {
 				isAttacking = true;
 				animator.SetBool ("Walk Forward", false);
-				//animator.SetTrigger ("PunchTrigger");
 				if (!stop) {
 					StartCoroutine (Wait());
 				}
@@ -36,7 +30,6 @@ public class AI : MonoBehaviour {
 
 	IEnumerator Wait(){
 		stop = true;
-		//animator.SetBool ("PunchTrigger", false);
 		yield return new WaitForSeconds (1.0f);
 		animator.SetTrigger ("PunchTrigger");
 		stop = false;
@@ -68,7 +61,6 @@ public class AI : MonoBehaviour {
 			} else {
 				meshAi = GameObject.Find ("Mesh_Male");
 			}
-
 			ai.transform.LookAt (meshPlayer.transform);
 		}
 	}
@@ -76,10 +68,7 @@ public class AI : MonoBehaviour {
 	void OnTriggerEnter(Collider col){
 		if (ChangeCharacter.isGameStarted) {
 			if (col.gameObject.transform.parent.parent.name == "LiuKang" || col.gameObject.transform.parent.parent.name == "Scorpion") {
-				//print("TRIGGER ai");
 				if (isAttacking) {
-					//Decrease players life
-					//print("TRIGGER ai, decrease life");
 					ChangeCharacter.hp1-=4;
 				}
 			}
